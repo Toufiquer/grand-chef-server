@@ -3,9 +3,9 @@ const cors = require("cors");
 require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
+const jwt = require("jsonwebtoken");
 
 // json web token
-const jwt = require("jsonwebtoken");
 
 app.use(express.json());
 app.use(cors());
@@ -23,7 +23,7 @@ app.use(cors());
 
 const verifyJWT = (req, res, next) => {
   const tokenString = req.headers.token;
-  const email = tokenString.split(" ")[1];
+  const reqEmail = tokenString.split(" ")[1];
   const token = tokenString.split(" ")[2];
   jwt.verify(token, process.env.TOKEN_SECRET, function (err, decoded) {
     if (err) {
@@ -36,7 +36,7 @@ const verifyJWT = (req, res, next) => {
     } else {
       const email = decoded;
       req.decodedEmail = email;
-      req.email = email;
+      req.reqEmail = reqEmail;
       next();
     }
   });
@@ -62,7 +62,7 @@ async function run() {
 
     // check token
     app.get("/verify", verifyJWT, (req, res) => {
-      if (req.email === req.decodedEmail) {
+      if (req.reqEmail === req.decodedEmail) {
         res.send({ message: "Token is valid" });
       } else {
         res.send({ message: "Email is not valid" });
