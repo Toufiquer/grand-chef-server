@@ -6,6 +6,17 @@ const port = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(cors());
+// const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+// const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.USER_PASSWORD}... ...`;
+
+// // Create a MongoClient with a MongoClientOptions object to set the Stable API version
+// const client = new MongoClient(uri, {
+//   serverApi: {
+//     version: ServerApiVersion.v1,
+//     strict: true,
+//     deprecationErrors: true,
+//   },
+// });
 
 async function run() {
   try {
@@ -13,6 +24,12 @@ async function run() {
     app.get("/", (req, res) => {
       res.send({ message: "Server is running" });
     });
+
+    // // Connect the client to the server	(optional starting in v4.7)
+    // await client.connect();
+
+    // // create a database
+    // const usersCollection = client.db("usersCollection").collection("users");
 
     // get a  user
     app.get("/user/:userId", async (req, res) => {
@@ -60,6 +77,8 @@ async function run() {
       // res.send(result);
     });
   } finally {
+    //   // Ensures that the client will close when you finish/error
+    //   // await client.close();
   }
 }
 run().catch(console.dir);
