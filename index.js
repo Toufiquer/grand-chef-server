@@ -21,6 +21,27 @@ app.use(cors());
 //   },
 // });
 
+const verifyJWT = (req, res, next) => {
+  const tokenString = req.headers.token;
+  const email = tokenString.split(" ")[1];
+  const token = tokenString.split(" ")[2];
+  jwt.verify(token, process.env.TOKEN_SECRET, function (err, decoded) {
+    if (err) {
+      err = {
+        name: "NotBeforeError",
+        message: "jwt not active",
+      };
+      const data = err;
+      res.status(401).send({ data });
+    } else {
+      const email = decoded;
+      req.decodedEmail = email;
+      req.email = email;
+      next();
+    }
+  });
+};
+
 async function run() {
   try {
     // home
@@ -33,8 +54,19 @@ async function run() {
       const email = req.body.email;
       console.log(email, " => Line No: 31");
       const data = { email };
-      const token = jwt.sign(data, process.env.TOKEN_SECRET);
+      const token = jwt.sign(data, process.env.TOKEN_SECRET, {
+        expiresIn: "1h",
+      });
       res.send({ token });
+    });
+
+    // check token
+    app.get("/verify", verifyJWT, (req, res) => {
+      if (req.email === req.decodedEmail) {
+        res.send({ message: "Token is valid" });
+      } else {
+        res.send({ message: "Email is not valid" });
+      }
     });
 
     // // Connect the client to the server	(optional starting in v4.7)
