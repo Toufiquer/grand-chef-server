@@ -34,7 +34,7 @@ const verifyJWT = (req, res, next) => {
       const data = err;
       res.status(401).send({ data });
     } else {
-      const email = decoded;
+      const email = decoded.email;
       req.decodedEmail = email;
       req.reqEmail = reqEmail;
       next();
@@ -63,9 +63,17 @@ async function run() {
     // check token
     app.get("/verify", verifyJWT, (req, res) => {
       if (req.reqEmail === req.decodedEmail) {
-        res.send({ message: "Token is valid" });
+        res.send({
+          message: "Token is valid",
+          reqEmail: req.reqEmail,
+          decodedEmail: req.decodedEmail,
+        });
       } else {
-        res.send({ message: "Email is not valid" });
+        res.send({
+          message: "Email is not valid",
+          reqEmail: req.reqEmail,
+          decodedEmail: req.decodedEmail,
+        });
       }
     });
 
