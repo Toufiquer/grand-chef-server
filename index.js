@@ -4,6 +4,9 @@ require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
 
+// json web token
+const jwt = require("jsonwebtoken");
+
 app.use(express.json());
 app.use(cors());
 // const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
@@ -23,6 +26,15 @@ async function run() {
     // home
     app.get("/", (req, res) => {
       res.send({ message: "Server is running" });
+    });
+
+    // Create a access token
+    app.post("/jwt", (req, res) => {
+      const email = req.body.email;
+      console.log(email, " => Line No: 31");
+      const data = { email };
+      const token = jwt.sign(data, process.env.TOKEN_SECRET);
+      res.send({ token });
     });
 
     // // Connect the client to the server	(optional starting in v4.7)
